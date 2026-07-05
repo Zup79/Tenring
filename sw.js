@@ -1,5 +1,5 @@
 /* Ten Ring service worker — offline-first app shell */
-const CACHE = 'tenring-v4';
+const CACHE = 'tenring-v5';
 const ASSETS = [
   './',
   './index.html',

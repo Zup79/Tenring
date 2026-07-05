@@ -168,9 +168,11 @@
   .stepper button:disabled{opacity:.3}
   .stepper .val{font-family:var(--mono); font-size:24px; font-weight:700; min-width:40px; text-align:center}
   .names-list{display:flex; flex-direction:column; gap:8px; margin-top:4px}
-  .names-list .nr{display:flex; align-items:center; gap:10px}
-  .names-list .nr .ix{font-family:var(--mono); font-size:12px; color:var(--muted); width:22px}
-  .names-list .nr input{flex:1; padding:10px 12px; border-radius:10px; border:1px solid var(--line); background:#fff; font-size:14px}
+  .names-list{gap:10px}
+  .names-list .nr{display:flex; flex-direction:column; gap:9px; padding:10px 10px 11px; border:1px solid var(--line); border-radius:12px; background:#fbfaf7}
+  .names-list .nr .nr-top{display:flex; align-items:center; gap:10px}
+  .names-list .nr .ix{font-family:var(--mono); font-size:12px; color:var(--muted); width:20px; flex:0 0 auto}
+  .names-list .nr input{flex:1; min-width:0; padding:10px 12px; border-radius:10px; border:1px solid var(--line); background:#fff; font-size:14px}
   .names-list .nr input:focus{outline:none; border-color:var(--cyan)}
   .addbtn{width:100%; padding:13px; border-radius:11px; border:1px dashed var(--brass); background:var(--brass-soft); color:var(--ink); font-weight:600; font-size:13px; margin-top:8px}
   .panel-actions{display:flex; gap:10px; margin-top:14px}
@@ -237,13 +239,17 @@
   .cls-badge{display:inline-flex; align-items:center; font-family:var(--body); font-size:9px; font-weight:700; letter-spacing:.06em; padding:1px 5px; border-radius:5px; margin-left:6px; vertical-align:middle}
   .cls-CF{background:var(--cyan-soft); color:var(--cyan-d)}
   .cls-RF{background:var(--brass-soft); color:var(--brass)}
-  .clsseg{display:inline-flex; gap:3px; flex:0 0 auto}
-  .clsseg button{font-size:10px; font-weight:700; letter-spacing:.04em; padding:7px 8px; border-radius:8px; background:var(--paper-2); color:var(--muted); border:1px solid var(--line); min-width:34px}
-  .clsseg button.on{background:var(--gunmetal); color:var(--paper); border-color:var(--gunmetal)}
+  .clsseg{display:flex; gap:6px; width:100%}
+  .clsseg button{flex:1; font-size:12px; font-weight:700; letter-spacing:.03em; padding:9px 6px; border-radius:9px; background:#fff; color:var(--muted); border:1.5px solid var(--line)}
+  .clsseg button.on{background:var(--gunmetal); color:#fff; border-color:var(--gunmetal)}
+  .clsseg button.c-CF.on{background:var(--cyan); border-color:var(--cyan); color:#fff}
+  .clsseg button.c-RF.on{background:var(--brass); border-color:var(--brass); color:#fff}
   .sheet-head .nm-row{display:flex; align-items:center; gap:8px}
-  .nm-cls{font-size:9px; font-weight:700; letter-spacing:.06em; padding:3px 7px; border-radius:6px; border:1px solid var(--line); color:var(--muted); background:#fff}
-  .nm-cls.on-CF{background:var(--cyan-soft); color:var(--cyan-d); border-color:transparent}
-  .nm-cls.on-RF{background:var(--brass-soft); color:var(--brass); border-color:transparent}
+  .nm-cls{flex:0 0 auto; font-size:10px; font-weight:700; letter-spacing:.05em; padding:5px 10px; border-radius:8px; border:1.5px dashed var(--brass); color:var(--brass); background:var(--brass-soft)}
+  .nm-cls.on-CF{background:var(--cyan); color:#fff; border:1.5px solid var(--cyan)}
+  .nm-cls.on-RF{background:var(--brass); color:#fff; border:1.5px solid var(--brass)}
+  .print-tip{font-size:11.5px; color:var(--muted); line-height:1.5; margin:14px 2px 0; padding-top:11px; border-top:1px solid var(--line)}
+  .print-tip b{color:var(--ink)}
 
   /* ---- copy dialog ---- */
   .copybtn{width:100%; padding:11px; border-radius:11px; border:1px dashed var(--cyan); background:var(--cyan-soft); color:var(--ink); font-weight:600; font-size:13px; margin-bottom:14px}
@@ -478,6 +484,7 @@
       <span style="flex:1"><b>Download CSV</b><span>Spreadsheet — every series and total</span></span>
     </button>
   </div>
+  <p class="print-tip">Printing tip: in the print dialog, turn <b>Headers &amp; footers OFF</b> and set <b>Margins: Default</b> for the cleanest sheet.</p>
   <div class="panel-actions" style="margin-top:14px"><button class="pbtn" data-close>Close</button></div>
 </div></div>
 
@@ -698,8 +705,8 @@ function renderSheet(){
 }
 function setNmCls(cls){
   const b=$('nmCls'); if(!b) return;
-  b.textContent = cls||'—';
-  b.className='nm-cls'+(cls?(' on-'+cls):'');
+  b.textContent = cls ? cls : '+ class';
+  b.className='nm-cls'+(cls?(' on-'+cls):' empty');
 }
 const CLS_CYCLE={ '':'CF', 'CF':'RF', 'RF':'' };
 $('nmCls').onclick=()=>{
@@ -909,8 +916,8 @@ function renderSetupShooters(){
   for(let i=0;i<s.count;i++){
     const row=document.createElement('div'); row.className='nr';
     const cl=s.shooters[i].cls||'';
-    row.innerHTML=`<span class="ix">${i+1}</span><input value="${escapeAttr(s.shooters[i].name)}" maxlength="28" data-ni="${i}">`+
-      `<span class="clsseg" data-ci="${i}"><button data-c="" class="${cl===''?'on':''}">—</button><button data-c="CF" class="${cl==='CF'?'on':''}">CF</button><button data-c="RF" class="${cl==='RF'?'on':''}">RF</button></span>`;
+    row.innerHTML=`<div class="nr-top"><span class="ix">${i+1}</span><input value="${escapeAttr(s.shooters[i].name)}" maxlength="28" data-ni="${i}"></div>`+
+      `<div class="clsseg" data-ci="${i}"><button data-c="" class="c-none ${cl===''?'on':''}">No class</button><button data-c="CF" class="c-CF ${cl==='CF'?'on':''}">CF</button><button data-c="RF" class="c-RF ${cl==='RF'?'on':''}">RF</button></div>`;
     list.appendChild(row);
   }
   list.querySelectorAll('input').forEach(inp=>{ inp.oninput=()=>{ s.shooters[+inp.dataset.ni].name=inp.value||("Shooter "+(+inp.dataset.ni+1)); save(); renderChips(); if(+inp.dataset.ni===s.active){ $('nmEdit').value=inp.value; } }; });
@@ -1069,7 +1076,8 @@ function closeoutHtmlPrint(){
 function printSheet(){
   const MM=96/25.4;
   const contentW=Math.round((210-24)*MM);   // 186mm printable width
-  const printableH=Math.round((297-24)*MM);  // 273mm printable height
+  const printableH=Math.round((297-24)*MM);  // 273mm true printable height
+  const pageH=Math.round(238*MM);            // conservative: survives browser header/footer without spilling
 
   const blocks=[];
   for(let si=0; si<state.mode; si++){
@@ -1081,14 +1089,14 @@ function printSheet(){
   }
   blocks.push({html:closeoutHtmlPrint(), stick:true});
 
-  const DATA = { blocks, header:pageHeaderHtml(), footL:'TEN RING · '+escapeHtml(state.meta.club||'SSAA'), printableH, contentW };
+  const DATA = { blocks, header:pageHeaderHtml(), footL:'TEN RING · '+escapeHtml(state.meta.club||'SSAA'), pageH, contentW };
 
   const css=`
-    @page{ size:A4; margin:12mm; }
+    @page{ size:A4; margin:11mm; }
     *{box-sizing:border-box}
     body{font-family:'Helvetica Neue',Arial,sans-serif; color:#16181a; margin:0}
     #meas,#probe{position:absolute; left:-9999px; top:0; visibility:hidden; width:${contentW}px}
-    .page{ min-height:${printableH}px; display:flex; flex-direction:column; page-break-after:always }
+    .page{ min-height:${pageH}px; display:flex; flex-direction:column; page-break-after:always }
     .page:last-child{page-break-after:auto}
     .p-body{flex:1 1 auto; overflow:hidden}
     .p-head{display:flex; align-items:center; gap:14px; padding-bottom:8px}
@@ -1153,7 +1161,7 @@ function printSheet(){
       var head=probe.querySelector('.p-head'), rib=probe.querySelector('.ribbon'), foot=probe.querySelector('.p-foot');
       var headH=(head?head.offsetHeight:60)+(rib?rib.offsetHeight:3);
       var footH=foot?foot.offsetHeight:24;
-      var GAP=10, budget=DATA.printableH-headH-footH-14;
+      var GAP=10, budget=DATA.pageH-headH-footH-12;
       meas.innerHTML=DATA.blocks.map(function(b){return b.html}).join('');
       var els=Array.prototype.slice.call(meas.children);
       var H=els.map(function(el){return el.offsetHeight});
